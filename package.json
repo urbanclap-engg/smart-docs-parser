@@ -1,0 +1,25 @@
+{
+  "name": "smart-docs-parser",
+  "version": "1.0.0",
+  "description": "Document Details Parsing using OCR",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "OCR",
+    "PAN",
+    "AADHAAR",
+    "PARSING",
+    "AUTO-FILL"
+  ],
+  "author": "Sourabh Jajoria",
+  "license": "ISC",
+  "devDependencies": {
+    "bluebird": "^3.7.2",
+    "lodash": "^4.17.15",
+    "moment": "^2.10.5",
+    "request-promise": "^4.2.0",
+    "typescript": "^3.6.4"
+  }
+}
