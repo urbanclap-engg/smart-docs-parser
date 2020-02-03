@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build" : "tsc"
+    "build": "tsc",
+    "lint": "tslint -p tsconfig.json"
   },
   "keywords": [
     "OCR",
@@ -17,10 +18,16 @@
   "author": "Sourabh Jajoria",
   "license": "ISC",
   "devDependencies": {
+    "@types/node": "^13.7.0",
     "bluebird": "^3.7.2",
     "lodash": "^4.17.15",
     "moment": "^2.10.5",
+    "prettier": "^1.19.1",
+    "request": "^2.88.0",
     "request-promise": "^4.2.0",
+    "tslint": "^6.0.0",
+    "tslint-config-prettier": "^1.18.0",
+    "tslint-plugin-prettier": "^2.1.0",
     "typescript": "^3.6.4"
   }
 }
