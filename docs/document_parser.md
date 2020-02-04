@@ -82,7 +82,7 @@ import {
 // Logic for API handlers starts here                      //
 // ******************************************************* //
 YourParser.parseDocumentDetails = (
-  rawTextLines: ParseDocumentDetailsRequest
+  params: ParseDocumentDetailsRequest
 ): ParseDocumentDetailsResponse => {
   ....
   ....
