@@ -52,10 +52,10 @@ SmartDocuments.extractDocumentDetailsFromImage = async (
     return Constants.EMPTY_RESPONSE;
   }
 
-  const ocrResponse = await OCR[selectedOCR].extractDocumentText(
-    documentURL,
-    apiKey
-  );
+  const ocrResponse = await OCR[selectedOCR].extractDocumentText({
+    document_url: documentURL,
+    api_key: apiKey
+  });
   const rawText = _.get(ocrResponse, "raw_text", []);
   const isValidText = validateDocumentText(rawText);
   if (!isValidText) {
@@ -65,7 +65,8 @@ SmartDocuments.extractDocumentDetailsFromImage = async (
   const documentDetails = await DocumentParser[
     documentType
   ].parseDocumentDetails({
-    raw_text: rawText});
+    raw_text: rawText
+  });
   return {
     raw_text: rawText,
     is_document_valid: _.get(documentDetails, "is_document_valid"),

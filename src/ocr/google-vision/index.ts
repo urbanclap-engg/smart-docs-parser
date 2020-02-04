@@ -1,6 +1,10 @@
 import requestPromise from "request-promise";
 import _ from "lodash";
 import BluebirdPromise from "bluebird";
+import {
+  ExtractDocumentTypeRequest,
+  ExtractDocumentTypeResponse
+} from "../../interfaces/OCR";
 import Constants from "./constants";
 // Request-promise is not for image format as per the documentation
 import requestModule from "request";
@@ -22,9 +26,9 @@ const getApiUrl = apiKey => {
 };
 
 GoogleVision.extractDocumentText = async (
-  documentUrl: string,
-  apiKey: string
-) => {
+  params: ExtractDocumentTypeRequest
+): Promise<ExtractDocumentTypeResponse> => {
+  const { document_url: documentUrl, api_key: apiKey } = params;
   const base64String = await getBase64StringFromURL(documentUrl);
   if (_.isEmpty(base64String)) {
     return Constants.EMPTY_RESPONSE;
