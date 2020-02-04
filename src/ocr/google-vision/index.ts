@@ -12,6 +12,9 @@ const request = BluebirdPromise.promisifyAll(requestModule);
 
 const GoogleVision: any = {};
 
+// ******************************************************* //
+// Logic for internal functions starts here                  //
+// ******************************************************* //
 const getBase64StringFromURL = async (documentUrl: string) => {
   const base64Image = await request.getAsync({
     url: documentUrl,
@@ -24,7 +27,13 @@ const getApiUrl = apiKey => {
   const baseURL = Constants.BASE_URL;
   return _.join([baseURL, apiKey], Constants.KEY_CONNECTOR);
 };
+// ******************************************************* //
+// Logic for internal functions ends here                  //
+// ******************************************************* //
 
+// ******************************************************* //
+// Logic for API handlers starts here                      //
+// ******************************************************* //
 GoogleVision.extractDocumentText = async (
   params: ExtractDocumentTypeRequest
 ): Promise<ExtractDocumentTypeResponse> => {
@@ -58,5 +67,8 @@ GoogleVision.extractDocumentText = async (
     raw_text: _.split(text, "\n")
   };
 };
+// ******************************************************* //
+// Logic for API handlers ends here                        //
+// ******************************************************* //
 
 export default GoogleVision;
