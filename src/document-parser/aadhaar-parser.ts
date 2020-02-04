@@ -6,14 +6,13 @@ import Constants from "../constants";
 const AADHAAR_REGEX = {
   title: /Unique|UNIQUE|Identification|IDENTIFICATION|Enrollment|ENROLLMENT/,
   govt: /Government|GOVERNMENT|India|INDIA/,
-  dob: /Dob|DOB|Year|YEAR|Birth|BIRTH|(\d\d\/\d\d\/\d+)/,
-  relative_name: /Father|FATHER|Mother|MOTHER|Husband|HUSBAND|Wife|WIFE/,
+  dob_heading: /Dob|DOB|Year|YEAR|Birth|BIRTH|(\d\d\/\d\d\/\d+)/,
+  relative_name_heading: /Father|FATHER|Mother|MOTHER|Husband|HUSBAND|Wife|WIFE/,
   date_format: /(\d{2}\/\d{2}\/\d{4})/,
   gender: /Male|MALE|Female|FEMALE/,
   document: /Aadhaar|AADHAAR/,
-  number_format: /[\d\s]{12,}/, //^\d{4}\s\d{4}\s\d{4}$,
+  number_format: /[\d\s]{12,}/,
   name_format: /^[a-zA-Z\s\.]+$/,
-  // 'line_start_format': /^[a-zA-Z0-9]{1,}[a-zA-Z]*/, //'^[A-Z]+[a-zA-Z]{1,}'
   address_start: /([Ss]\/[Oo])|([Ww]\/[Oo])|([Dd]\/[Oo])|([Cc]\/[Oo])|(Address|ADDRESS)/,
   address_start_split: /,/,
   noise: /(^[\s]+$)|(^[A-Z]{0,2}[.,]+$)|(^[a-z])|(^[A-Z0-9]{2,}[a-z]+)|(^[A-Z0-9]+[a-z]+[A-Z]+)|(^[A-Z0-9]+[.,]+[A-Z0-9]+)|(^[0-9]+[a-zA-Z]{2,})/,
@@ -80,7 +79,7 @@ const parseAadhaarHeadingLineNumbers = (lines: Array<string>) => {
       aadhaarHeadingLineNumbers["aadhar_govt_text_line"] = index;
     } else if (
       !aadhaarHeadingLineNumbers["aadhar_dob_text_line"] &&
-      AADHAAR_REGEX["dob"].exec(line)
+      AADHAAR_REGEX["dob_heading"].exec(line)
     ) {
       aadhaarHeadingLineNumbers["aadhar_dob_text_line"] = index;
     } else if (
@@ -95,7 +94,7 @@ const parseAadhaarHeadingLineNumbers = (lines: Array<string>) => {
       aadhaarHeadingLineNumbers["aadhar_number_text_line"] = index;
     } else if (
       !aadhaarHeadingLineNumbers["aadhar_relative_name_text_line"] &&
-      AADHAAR_REGEX["relative_name"].exec(line)
+      AADHAAR_REGEX["relative_name_heading"].exec(line)
     ) {
       aadhaarHeadingLineNumbers["aadhar_relative_name_text_line"] = index;
     } else if (AADHAAR_REGEX["address_start"].exec(line)) {
@@ -138,10 +137,9 @@ const processAadhaarName = (
   aadhaarHeadingLineNumbers: Record<string, any>
 ) => {
   const aadhaarNumberRelativeNameLine =
-    aadhaarHeadingLineNumbers["aadhar_relative_name_text_line"] &&
+    _.isNumber(aadhaarHeadingLineNumbers["aadhar_relative_name_text_line"]) &&
     aadhaarHeadingLineNumbers["aadhar_relative_name_text_line"] - 1;
   if (
-    aadhaarNumberRelativeNameLine &&
     AADHAAR_REGEX["name_format"].exec(textLines[aadhaarNumberRelativeNameLine])
   ) {
     return textLines[aadhaarNumberRelativeNameLine];
@@ -151,12 +149,10 @@ const processAadhaarName = (
     _.isNumber(aadhaarHeadingLineNumbers["aadhar_govt_text_line"]) &&
     aadhaarHeadingLineNumbers["aadhar_govt_text_line"] + 1;
   const aadhaarNumberDOBLine =
-    aadhaarHeadingLineNumbers["aadhar_dob_text_line"] &&
+    _.isNumber(aadhaarHeadingLineNumbers["aadhar_dob_text_line"]) &&
     aadhaarHeadingLineNumbers["aadhar_dob_text_line"] - 1;
 
   if (
-    aadhaarGovtTextLine &&
-    aadhaarNumberDOBLine &&
     aadhaarGovtTextLine < aadhaarNumberDOBLine &&
     AADHAAR_REGEX["name_format"].exec(textLines[aadhaarGovtTextLine])
   ) {
@@ -164,7 +160,6 @@ const processAadhaarName = (
   }
 
   if (
-    aadhaarNumberDOBLine &&
     !aadhaarHeadingLineNumbers["aadhar_address_start_line"] &&
     AADHAAR_REGEX["name_format"].exec(textLines[aadhaarNumberDOBLine])
   ) {
@@ -198,11 +193,11 @@ const parseAadhaarNumber = (
 ) => {
   const aadhaarGenderLine =
     aadhaarHeadingLineNumbers["aadhar_gender_text_line"];
-  if (_.isNumber(aadhaarGenderLine) && aadhaarGenderLine + 1) {
+  if (_.isNumber(aadhaarGenderLine)) {
     return processAadhaarNumber(textLines[aadhaarGenderLine + 1]);
   }
   const aadhaarDOBLine = aadhaarHeadingLineNumbers["aadhar_dob_text_line"];
-  if (_.isNumber(aadhaarDOBLine) && aadhaarDOBLine + 2) {
+  if (_.isNumber(aadhaarDOBLine)) {
     return processAadhaarNumber(textLines[aadhaarDOBLine + 2]);
   }
   return undefined;
@@ -274,7 +269,7 @@ const processAadhaarDOB = (
   if (_.isEmpty(dateText)) {
     return undefined;
   }
-  return moment.utc(dateText, "DD/MM/YYYY");
+  return moment.utc(dateText, "DD/MM/YYYY").toISOString();
 };
 
 const processAadhaarAddress = (
@@ -380,7 +375,6 @@ const validateAadhaarText = (
 AadhaarParser.parseDocumentDetails = (rawTextLines: Array<string>) => {
   const textLines = filterRelevantAadhaarText(rawTextLines);
   const aadhaarHeadingLineNumbers = parseAadhaarHeadingLineNumbers(textLines);
-  // Validate document
   const isDocumentValid = validateAadhaarText(aadhaarHeadingLineNumbers);
   if (!isDocumentValid) {
     return Constants.INVALID_DOCUMENT_RESPONSE;

@@ -123,7 +123,7 @@ const processPANDateOfBirth = (text: string) => {
   if (_.isEmpty(text)) {
     return undefined;
   }
-  return moment.utc(text, "DD/MM/YYYY");
+  return moment.utc(text, "DD/MM/YYYY").toISOString();
 };
 
 const getPANFormat = (panHeadingLineNumbers: Record<string, any>) => {
@@ -215,16 +215,16 @@ const parseAdvancePANText = (
   };
 
   const panNumberLine =
-    panHeadingLineNumbers["pan_number_text_line"] &&
+    _.isNumber(panHeadingLineNumbers["pan_number_text_line"]) &&
     panHeadingLineNumbers["pan_number_text_line"] + 1;
   const panDOBLine =
-    panHeadingLineNumbers["pan_DOB_text_line"] &&
+    _.isNumber(panHeadingLineNumbers["pan_DOB_text_line"]) &&
     panHeadingLineNumbers["pan_DOB_text_line"] + 1;
   const panFatherNameLine =
-    panHeadingLineNumbers["pan_fathers_name_text_line"] &&
+    _.isNumber(panHeadingLineNumbers["pan_fathers_name_text_line"]) &&
     panHeadingLineNumbers["pan_fathers_name_text_line"] + 1;
   const panNameLine =
-    panHeadingLineNumbers["pan_fathers_name_text_line"] &&
+    _.isNumber(panHeadingLineNumbers["pan_fathers_name_text_line"]) &&
     panHeadingLineNumbers["pan_fathers_name_text_line"] - 1;
 
   parsedResult.identification_number = processPANNumber(
@@ -274,7 +274,6 @@ const validatePANText = (panHeadingLineNumbers: Record<string, any>) => {
 PANParser.parseDocumentDetails = (rawTextLines: Array<string>) => {
   const textLines = filterRelevantPANtext(rawTextLines);
   const panHeadingLineNumbers = parsePANHeadingLineNumbers(textLines);
-  // Validate document
   const isDocumentValid = validatePANText(panHeadingLineNumbers);
   if (!isDocumentValid) {
     return Constants.INVALID_DOCUMENT_RESPONSE;

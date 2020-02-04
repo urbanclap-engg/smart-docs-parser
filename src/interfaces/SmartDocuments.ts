@@ -11,7 +11,6 @@ interface DocumentDetails {
 export interface ExtractDocumentDetailsFromImageRequest {
   document_url: string;
   document_type: string;
-  document_side: string;
   ocr_library: {
     ocr_type: "google-vision";
     api_key: string;

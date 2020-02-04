@@ -2,29 +2,38 @@
   "name": "smart-docs-parser",
   "version": "1.0.0",
   "description": "Document Details Parsing using OCR",
-  "main": "index.js",
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "lint": "tslint -p tsconfig.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com:SourabhJaz/smart-docs-parser.git"
   },
   "keywords": [
     "OCR",
     "PAN",
     "AADHAAR",
     "PARSING",
-    "AUTO-FILL"
+    "AUTO-FILL",
+    "Identity Documents"
   ],
   "author": "Sourabh Jajoria",
   "license": "ISC",
-  "devDependencies": {
-    "@types/node": "^13.7.0",
+  "files": ["lib/**/*"],
+  "dependencies": {
     "bluebird": "^3.7.2",
     "lodash": "^4.17.15",
     "moment": "^2.10.5",
-    "prettier": "^1.19.1",
     "request": "^2.88.0",
-    "request-promise": "^4.2.0",
+    "request-promise": "^4.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^13.7.0",
+    "prettier": "^1.19.1",
     "tslint": "^6.0.0",
     "tslint-config-prettier": "^1.18.0",
     "tslint-plugin-prettier": "^2.1.0",
