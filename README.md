@@ -93,6 +93,8 @@ Library can parse state name and pin-code but the accuracy of the system for com
 Contributions are welcome. Please create a pull-request if you want to add more document parsers, OCR libraries, test-support or enhance the existing code.
 
 ## Extending smart-docs-parser
-### Parsing more documents
-### Adding more OCR libraries
+* [Parsing more documents](https://github.com/SourabhJaz/smart-docs-parser/blob/master/docs/document_parser.md)
+* [Adding more OCR libraries](https://github.com/SourabhJaz/smart-docs-parser/blob/master/docs/ocr_library.md)
 
+## License
+[MIT](https://github.com/SourabhJaz/smart-docs-parser/blob/master/LICENSE)
