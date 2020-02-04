@@ -4,6 +4,13 @@
 
 https://medium.com/urbanclap-engineering/document-details-parsing-using-ocr-170bf6ad8a97
 
+## How does it work?
+
+```smart-docs-parser``` works in three steps:
+- Extraction of raw text from document image using OCR
+- Validation of document image based on passed document type and extracted raw text
+- Parsing relevant information from raw text using document parser
+
 ## Installation
 ```
 $ npm install smart-docs-parser
@@ -79,6 +86,11 @@ interface DocumentDetails {
   address?: string;
 }
 ```
+**raw_text** is the text extracted by the OCR
+
+**is_document_valid** denotes whether the document is valid based on input *document_type* and extracted *raw_text*
+
+**document_details** is the document information parsed using the specific document parser
 
 ## Supported Parameters
 ### Document Type
