@@ -1,5 +1,7 @@
 # smart-docs-parser
 
+```smart-docs-parser``` is a NodeJs library to parse details from ID images.
+
 https://medium.com/urbanclap-engineering/document-details-parsing-using-ocr-170bf6ad8a97
 
 ## Installation
