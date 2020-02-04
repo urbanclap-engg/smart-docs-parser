@@ -1,6 +1,10 @@
 import _ from "lodash";
 import moment from "moment";
 import Constants from "../constants";
+import {
+  ParseDocumentDetailsRequest,
+  ParseDocumentDetailsResponse
+} from "../interfaces/DocumentParser";
 
 // TODO update regex rules
 const AADHAAR_REGEX = {
@@ -372,7 +376,9 @@ const validateAadhaarText = (
 // ******************************************************* //
 // Logic for API handlers starts here                      //
 // ******************************************************* //
-AadhaarParser.parseDocumentDetails = (rawTextLines: Array<string>) => {
+AadhaarParser.parseDocumentDetails = (
+  rawTextLines: ParseDocumentDetailsRequest
+): ParseDocumentDetailsResponse => {
   const textLines = filterRelevantAadhaarText(rawTextLines);
   const aadhaarHeadingLineNumbers = parseAadhaarHeadingLineNumbers(textLines);
   const isDocumentValid = validateAadhaarText(aadhaarHeadingLineNumbers);

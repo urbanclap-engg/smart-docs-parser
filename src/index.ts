@@ -1,7 +1,10 @@
 import _ from "lodash";
 import OCR from "./ocr";
 import DocumentParser from "./document-parser";
-import { ExtractDocumentDetailsFromImageRequest } from "./interfaces/SmartDocuments";
+import {
+  ExtractDocumentDetailsFromImageRequest,
+  ExtractDocumentDetailsFromImageResponse
+} from "./interfaces/SmartDocuments";
 import Constants from "./constants";
 
 const SmartDocuments: any = {};
@@ -37,7 +40,7 @@ const validateDocumentText = (rawText: Array<string>): boolean => {
 // ******************************************************* //
 SmartDocuments.extractDocumentDetailsFromImage = async (
   params: ExtractDocumentDetailsFromImageRequest
-) => {
+): Promise<ExtractDocumentDetailsFromImageResponse> => {
   const {
     document_type: documentType,
     document_url: documentURL,

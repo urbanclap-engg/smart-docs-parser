@@ -1,6 +1,10 @@
 import _ from "lodash";
 import moment from "moment";
 import Constants from "../constants";
+import {
+  ParseDocumentDetailsRequest,
+  ParseDocumentDetailsResponse
+} from "../interfaces/DocumentParser";
 
 const PAN_REGEX = {
   govt: /GOVT|INDIA/,
@@ -271,7 +275,9 @@ const validatePANText = (panHeadingLineNumbers: Record<string, any>) => {
 // ******************************************************* //
 // Logic for API handlers starts here                      //
 // ******************************************************* //
-PANParser.parseDocumentDetails = (rawTextLines: Array<string>) => {
+PANParser.parseDocumentDetails = (
+  rawTextLines: ParseDocumentDetailsRequest
+): ParseDocumentDetailsResponse => {
   const textLines = filterRelevantPANtext(rawTextLines);
   const panHeadingLineNumbers = parsePANHeadingLineNumbers(textLines);
   const isDocumentValid = validatePANText(panHeadingLineNumbers);
