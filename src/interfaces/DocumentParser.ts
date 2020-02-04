@@ -8,7 +8,9 @@ interface DocumentDetails {
   address?: string;
 }
 
-export type ParseDocumentDetailsRequest = Array<string>;
+export interface ParseDocumentDetailsRequest {
+  raw_text: Array<string>;
+}
 
 export interface ParseDocumentDetailsResponse {
   is_document_valid: boolean;

@@ -18,5 +18,8 @@ Constants.REQUEST_PAYLOAD = {
     }
   ]
 };
+Constants.EMPTY_RESPONSE = {
+  raw_text: []
+};
 
 export default Constants;

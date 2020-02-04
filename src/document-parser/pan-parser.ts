@@ -276,8 +276,9 @@ const validatePANText = (panHeadingLineNumbers: Record<string, any>) => {
 // Logic for API handlers starts here                      //
 // ******************************************************* //
 PANParser.parseDocumentDetails = (
-  rawTextLines: ParseDocumentDetailsRequest
+  params: ParseDocumentDetailsRequest
 ): ParseDocumentDetailsResponse => {
+  const { raw_text: rawTextLines } = params;
   const textLines = filterRelevantPANtext(rawTextLines);
   const panHeadingLineNumbers = parsePANHeadingLineNumbers(textLines);
   const isDocumentValid = validatePANText(panHeadingLineNumbers);

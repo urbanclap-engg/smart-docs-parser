@@ -27,7 +27,7 @@ GoogleVision.extractDocumentText = async (
 ) => {
   const base64String = await getBase64StringFromURL(documentUrl);
   if (_.isEmpty(base64String)) {
-    return [];
+    return Constants.EMPTY_RESPONSE;
   }
 
   const payload = Constants.REQUEST_PAYLOAD;
@@ -46,11 +46,13 @@ GoogleVision.extractDocumentText = async (
     return !_.isEmpty(textAnnotation);
   });
   if (_.isEmpty(fullTextAnnotation)) {
-    return [];
+    return Constants.EMPTY_RESPONSE;
   }
 
   const text = _.get(fullTextAnnotation, "fullTextAnnotation.text", "");
-  return _.split(text, "\n");
+  return {
+    raw_text: _.split(text, "\n")
+  };
 };
 
 export default GoogleVision;

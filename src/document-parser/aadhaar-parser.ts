@@ -377,8 +377,9 @@ const validateAadhaarText = (
 // Logic for API handlers starts here                      //
 // ******************************************************* //
 AadhaarParser.parseDocumentDetails = (
-  rawTextLines: ParseDocumentDetailsRequest
+  params: ParseDocumentDetailsRequest
 ): ParseDocumentDetailsResponse => {
+  const { raw_text: rawTextLines } = params;
   const textLines = filterRelevantAadhaarText(rawTextLines);
   const aadhaarHeadingLineNumbers = parseAadhaarHeadingLineNumbers(textLines);
   const isDocumentValid = validateAadhaarText(aadhaarHeadingLineNumbers);

@@ -25,7 +25,7 @@ const validateOCRAgent = (selectedOCR: string, apiKey: string): boolean => {
 
 const validateDocumentText = (rawText: Array<string>): boolean => {
   const numberOfLines = _.size(rawText);
-  if (numberOfLines > Constants.MAX_LINES) {
+  if (!numberOfLines || numberOfLines > Constants.MAX_LINES) {
     return false;
   }
   return true;
@@ -52,10 +52,11 @@ SmartDocuments.extractDocumentDetailsFromImage = async (
     return Constants.EMPTY_RESPONSE;
   }
 
-  const rawText = await OCR[selectedOCR].extractDocumentText(
+  const ocrResponse = await OCR[selectedOCR].extractDocumentText(
     documentURL,
     apiKey
   );
+  const rawText = _.get(ocrResponse, "raw_text", []);
   const isValidText = validateDocumentText(rawText);
   if (!isValidText) {
     return Constants.EMPTY_RESPONSE;
@@ -63,7 +64,8 @@ SmartDocuments.extractDocumentDetailsFromImage = async (
 
   const documentDetails = await DocumentParser[
     documentType
-  ].parseDocumentDetails(rawText);
+  ].parseDocumentDetails({
+    raw_text: rawText});
   return {
     raw_text: rawText,
     is_document_valid: _.get(documentDetails, "is_document_valid"),
