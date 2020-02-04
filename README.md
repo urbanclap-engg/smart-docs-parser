@@ -80,10 +80,10 @@ interface DocumentDetails {
 
 ## Supported Parameters
 ### Document Type
-- PAN_CARD
-- AADHAAR_CARD
+* PAN_CARD
+* AADHAAR_CARD
 ### OCR Library
-- Google-Vision
+* google-vision
 
 ## Current limitations
 ### Address parsing
