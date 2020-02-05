@@ -73,7 +73,9 @@ const extractedDocumentDetails = await SmartDocuments.extractDocumentDetailsFrom
 export interface ExtractDocumentDetailsFromImageRequest {
   document_url: string;
   document_type: string;
-  ocr_library: string
+  ocr_library: string;
+  custom_parser_path?: string; // Only for custom parsers
+  custom_ocr_path?: string; // Only for custom OCRs
 }
 ```
 ### Response
