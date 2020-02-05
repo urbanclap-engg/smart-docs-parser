@@ -17,11 +17,16 @@ $ npm install smart-docs-parser
 ```
 
 ## Usage
-### Configuration (sdpconfig.json)
+### Configuration
+Create a _config_ folder at the root of your project. Add _default.json_ file to the _config_ folder.
+#### config/default.json
 ```Javascript
-// Add google-vision API key in configuration
-"api_keys": {
-    "google-vision": "YourAPIKEY"
+{
+  "smart-docs-parser": {
+    "api_keys": {
+      "google-vision": "YOUR_API_KEY"
+    }
+  }
 }
 ```
 ### Code
@@ -68,7 +73,9 @@ const extractedDocumentDetails = await SmartDocuments.extractDocumentDetailsFrom
 export interface ExtractDocumentDetailsFromImageRequest {
   document_url: string;
   document_type: string;
-  ocr_library: string
+  ocr_library: string;
+  custom_parser_path?: string; // Only for custom parsers
+  custom_ocr_path?: string; // Only for custom OCRs
 }
 ```
 ### Response
@@ -76,7 +83,7 @@ export interface ExtractDocumentDetailsFromImageRequest {
 export interface ExtractDocumentDetailsFromImageResponse {
   raw_text: Array<string>;
   is_document_valid: boolean;
-  document_details: DocumentDetails;
+  document_details: DocumentDetails | object;
 }
 interface DocumentDetails {
   document_type?: string;
@@ -107,7 +114,7 @@ interface DocumentDetails {
 ### OCR Library
 * Google Vision
 ``` Javascript
-    ocr_library: ‘google-vision’
+    ocr_library: 'google-vision'
 ```
 
 ## Current limitations
@@ -120,7 +127,7 @@ Contributions are welcome. Please create a pull-request if you want to add more 
 ## Extending smart-docs-parser
 ### For specific use-cases
 * [Parsing more documents](https://github.com/SourabhJaz/smart-docs-parser/blob/master/docs/custom_parser.md)
-* Adding more OCR libraries(WIP)
+* [Adding more OCR libraries](https://github.com/SourabhJaz/smart-docs-parser/blob/master/docs/custom_ocr.md)
 
 ### Contributing to the library
 * [Parsing more documents](https://github.com/SourabhJaz/smart-docs-parser/blob/master/docs/document_parser.md)
