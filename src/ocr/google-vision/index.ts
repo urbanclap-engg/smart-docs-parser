@@ -38,6 +38,10 @@ GoogleVision.extractDocumentText = async (
   params: ExtractDocumentTypeRequest
 ): Promise<ExtractDocumentTypeResponse> => {
   const { document_url: documentUrl, api_key: apiKey } = params;
+  if (_.isEmpty(apiKey)) {
+    return Constants.EMPTY_RESPONSE;
+  }
+
   const base64String = await getBase64StringFromURL(documentUrl);
   if (_.isEmpty(base64String)) {
     return Constants.EMPTY_RESPONSE;

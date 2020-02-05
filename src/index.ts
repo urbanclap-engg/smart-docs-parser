@@ -6,21 +6,19 @@ import {
   ExtractDocumentDetailsFromImageResponse
 } from "./interfaces/SmartDocuments";
 import Constants from "./constants";
+import Config from "config";
 
 const SmartDocuments: any = {};
 
 // ******************************************************* //
 // Logic for internal functions starts here                //
 // ******************************************************* //
-const validateOCRAgent = (selectedOCR: string, apiKey: string): boolean => {
-  if (_.isEmpty(apiKey)) {
-    return false;
+const getAPIKeyFromConfig = (ocrLibrary: string): string => {
+  if (Config.has("smart-docs-parser.api_keys")) {
+    const apiKeys = Config.get("smart-docs-parser.api_keys");
+    return _.get(apiKeys, `${ocrLibrary}`, "");
   }
-  const supportedOCR = _.values(Constants.OCR_AGENTS);
-  if (!_.includes(supportedOCR, selectedOCR)) {
-    return false;
-  }
-  return true;
+  return "";
 };
 
 const validateDocumentText = (rawText: Array<string>): boolean => {
@@ -46,13 +44,9 @@ SmartDocuments.extractDocumentDetailsFromImage = async (
     document_url: documentURL,
     ocr_library: ocrLibrary
   } = params;
-  const { ocr_type: selectedOCR, api_key: apiKey } = ocrLibrary;
-  const isValidOCR = validateOCRAgent(selectedOCR, apiKey);
-  if (!isValidOCR) {
-    return Constants.EMPTY_RESPONSE;
-  }
+  const apiKey = getAPIKeyFromConfig(ocrLibrary);
 
-  const ocrResponse = await OCR[selectedOCR].extractDocumentText({
+  const ocrResponse = await OCR[ocrLibrary].extractDocumentText({
     document_url: documentURL,
     api_key: apiKey
   });

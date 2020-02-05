@@ -11,10 +11,7 @@ interface DocumentDetails {
 export interface ExtractDocumentDetailsFromImageRequest {
   document_url: string;
   document_type: string;
-  ocr_library: {
-    ocr_type: string;
-    api_key: string;
-  };
+  ocr_library: string;
 }
 
 export interface ExtractDocumentDetailsFromImageResponse {
