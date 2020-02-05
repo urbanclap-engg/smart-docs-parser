@@ -17,7 +17,15 @@ $ npm install smart-docs-parser
 ```
 
 ## Usage
+### Configuration (sdpconfig.json)
 ```Javascript
+// Add google-vision API key in configuration
+"api_keys": {
+    "google-vision": "YourAPIKEY"
+}
+```
+### Code
+```
 // ES6 import statement
 import SmartDocuments from 'smart-docs-parser';
 
@@ -25,10 +33,7 @@ import SmartDocuments from 'smart-docs-parser';
 const extractedDocumentDetails = await SmartDocuments.extractDocumentDetailsFromImage({
     document_url: 'https://avatars2.githubusercontent.com/u/20634933?s=40&v=4',
     document_type: 'PAN_CARD',
-    ocr_library: {
-      ocr_type: ‘google-vision’,
-      api_key: ‘API_KEY_FOR_VISION’
-    }
+    ocr_library: 'google-vision
 });
 
 // Sample Response
@@ -62,11 +67,8 @@ const extractedDocumentDetails = await SmartDocuments.extractDocumentDetailsFrom
 ```Javascript
 export interface ExtractDocumentDetailsFromImageRequest {
   document_url: string;
-  document_type: "PAN_CARD"|"AADHAAR_CARD";
-  ocr_library: {
-    ocr_type: "google-vision";
-    api_key: string;
-  };
+  document_type: string;
+  ocr_library: string
 }
 ```
 ### Response
@@ -77,7 +79,7 @@ export interface ExtractDocumentDetailsFromImageResponse {
   document_details: DocumentDetails;
 }
 interface DocumentDetails {
-  document_type?: "PAN_CARD"|"AADHAAR_CARD";
+  document_type?: string;
   identification_number?: string;
   name?: string;
   fathers_name?: string;
@@ -92,12 +94,21 @@ interface DocumentDetails {
 
 **document_details** is the document information parsed using the specific document parser
 
-## Supported Parameters
+## Supported Request Parameters
 ### Document Type
-* PAN_CARD
-* AADHAAR_CARD
+* PAN CARD
+``` Javascript
+    document_type: 'PAN_CARD'
+```
+* AADHAAR CARD
+``` Javascript
+    document_type: 'AADHAAR_CARD'
+```
 ### OCR Library
-* google-vision
+* Google Vision
+``` Javascript
+    ocr_library: ‘google-vision’
+```
 
 ## Current limitations
 ### Address parsing
@@ -107,6 +118,11 @@ Library can parse state name and pin-code but the accuracy of the system for com
 Contributions are welcome. Please create a pull-request if you want to add more document parsers, OCR libraries, test-support or enhance the existing code.
 
 ## Extending smart-docs-parser
+### Extending for specific use-cases
+* [Parsing more documents](https://github.com/SourabhJaz/smart-docs-parser/blob/master/docs/custom_parser.md)
+* Adding more OCR libraries(WIP)
+
+### Contributing to the library
 * [Parsing more documents](https://github.com/SourabhJaz/smart-docs-parser/blob/master/docs/document_parser.md)
 * [Adding more OCR libraries](https://github.com/SourabhJaz/smart-docs-parser/blob/master/docs/ocr_library.md)
 
