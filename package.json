@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --config jestconfig.json",
     "build": "tsc",
     "lint": "tslint -p tsconfig.json"
   },
@@ -35,8 +35,11 @@
     "request-promise": "^4.2.0"
   },
   "devDependencies": {
+    "@types/jest": "^25.1.1",
     "@types/node": "^13.7.0",
+    "jest": "^25.1.0",
     "prettier": "^1.19.1",
+    "ts-jest": "^25.2.0",
     "tslint": "^6.0.0",
     "tslint-config-prettier": "^1.18.0",
     "tslint-plugin-prettier": "^2.1.0",

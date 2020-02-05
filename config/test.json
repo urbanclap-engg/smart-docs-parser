@@ -1,0 +1,7 @@
+{
+  "smart-docs-parser": {
+    "api_keys": {
+      "google-vision": "TEST_KEY"
+    }
+  }
+}
