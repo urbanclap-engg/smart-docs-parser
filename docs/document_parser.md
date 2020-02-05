@@ -8,17 +8,6 @@
     /your-parser-goes-here.ts
 ```
 # Interface changes
-## src/interfaces/SmartDocuments.ts
-```Javascript
-export interface ExtractDocumentDetailsFromImageRequest {
-  document_url: string;
-  document_type: "PAN_CARD"|"AADHAAR_CARD"; // Add new document type here
-  ocr_library: {
-    ocr_type: "google-vision";
-    api_key: string;
-  };
-}
-```
 * *(Optionally)* If your parser exposes new document fields
 ## src/interfaces/SmartDocuments.ts
 ``` Javascript
