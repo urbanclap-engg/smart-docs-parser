@@ -6,18 +6,6 @@
     /google-vision
     /your-library-goes-here
 ```
-# Interface changes
-## src/interfaces/SmartDocuments.ts
-```Javascript
-export interface ExtractDocumentDetailsFromImageRequest {
-  document_url: string;
-  document_type: "PAN_CARD"|"AADHAAR_CARD";
-  ocr_library: {
-    ocr_type: "google-vision";// Add new OCR library here
-    api_key: string;
-  };
-}
-```
 
 # Configuration changes
 ## src/constants.ts
@@ -37,7 +25,7 @@ OCR[Constants.OCR_AGENTS.YOUR_LIBRARY] = {
   extractDocumentText: YourLibrary.extractDocumentText
 };
 ```
-## src//ocr/your-library-goes-here/index.ts
+## src/ocr/your-library-goes-here/index.ts
 - Your library should expose a function called `extractDocumentText`. 
 - For function contract check *src/interfaces/OCR.ts*
 - For reference please check the source code of google-vision integration.
