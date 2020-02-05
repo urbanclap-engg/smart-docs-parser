@@ -12,6 +12,8 @@ export interface ExtractDocumentDetailsFromImageRequest {
   document_url: string;
   document_type: string;
   ocr_library: string;
+  custom_parser_path?: string;
+  custom_ocr_path?: string;
 }
 
 export interface ExtractDocumentDetailsFromImageResponse {

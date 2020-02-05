@@ -14,5 +14,5 @@ export interface ParseDocumentDetailsRequest {
 
 export interface ParseDocumentDetailsResponse {
   is_document_valid: boolean;
-  document_details: DocumentDetails;
+  document_details: DocumentDetails | object;
 }

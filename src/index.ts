@@ -21,12 +21,47 @@ const getAPIKeyFromConfig = (ocrLibrary: string): string => {
   return "";
 };
 
+const extractRawText = async (
+  documentURL: string,
+  ocrLibrary: string,
+  customOCRPath: string
+) => {
+  const apiKey = getAPIKeyFromConfig(ocrLibrary);
+  if (!_.isEmpty(customOCRPath)) {
+    const ocrModule = require(`${customOCRPath}`);
+    return await ocrModule.extractDocumentText({
+      document_url: documentURL,
+      api_key: apiKey
+    });
+  }
+  return await OCR[ocrLibrary].extractDocumentText({
+    document_url: documentURL,
+    api_key: apiKey
+  });
+};
+
 const validateDocumentText = (rawText: Array<string>): boolean => {
   const numberOfLines = _.size(rawText);
   if (!numberOfLines || numberOfLines > Constants.MAX_LINES) {
     return false;
   }
   return true;
+};
+
+const parseDocumentDetails = async (
+  documentType: string,
+  rawText: Array<string>,
+  customParserPath: string
+) => {
+  if (!_.isEmpty(customParserPath)) {
+    const parserModule = require(`${customParserPath}`);
+    return await parserModule.parseDocumentDetails({
+      raw_text: rawText
+    });
+  }
+  return await DocumentParser[documentType].parseDocumentDetails({
+    raw_text: rawText
+  });
 };
 
 // ******************************************************* //
@@ -42,25 +77,28 @@ SmartDocuments.extractDocumentDetailsFromImage = async (
   const {
     document_type: documentType,
     document_url: documentURL,
-    ocr_library: ocrLibrary
+    ocr_library: ocrLibrary,
+    custom_parser_path: customParserPath,
+    custom_ocr_path: customOCRPath
   } = params;
-  const apiKey = getAPIKeyFromConfig(ocrLibrary);
 
-  const ocrResponse = await OCR[ocrLibrary].extractDocumentText({
-    document_url: documentURL,
-    api_key: apiKey
-  });
+  const ocrResponse = await extractRawText(
+    documentURL,
+    ocrLibrary,
+    customOCRPath
+  );
   const rawText = _.get(ocrResponse, "raw_text", []);
   const isValidText = validateDocumentText(rawText);
   if (!isValidText) {
     return Constants.EMPTY_RESPONSE;
   }
 
-  const documentDetails = await DocumentParser[
-    documentType
-  ].parseDocumentDetails({
-    raw_text: rawText
-  });
+  const documentDetails = await parseDocumentDetails(
+    documentType,
+    rawText,
+    customParserPath
+  );
+
   return {
     raw_text: rawText,
     is_document_valid: _.get(documentDetails, "is_document_valid"),

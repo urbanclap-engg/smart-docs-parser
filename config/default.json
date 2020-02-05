@@ -1,4 +1,7 @@
 {
   "smart-docs-parser": {
+    "api_keys": {
+      "google-vision": "YOUR_API_KEY"
+    }
   }
 }
