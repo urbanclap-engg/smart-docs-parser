@@ -1,12 +1,13 @@
 > **NOTE** This guide is intended for engineers extending `smart-docs-parser` for their custom use-case. If you think this could be benificial to the community then please contribute to `smart-docs-parser` source-code using the generic guide [here](https://github.com/SourabhJaz/smart-docs-parser/blob/master/docs/document_parser.md).
 
 # Configuration changes
-### sdpconfig.json
+### config/default.json
+Add config variable for _custom_parsers_ in the format
 ```Javascript
-"custom_parsers": [{
-  "document_type": "your_custom_document_type" // Add your custom document type here. (Example: "VOTER_CARD")
-  "parser_path": "/path/to/parser_file.js" // Add your customer parse file path here. 
-}]
+    "custom_parsers": [{
+      "document_type": "YOUR_DOCUMENT_TYPE",
+      "parser_path": "/Users/sourabhjajoria/Desktop/your_parser.js"
+    }]
 ```
 
 # Parser Implementation
@@ -17,7 +18,7 @@ Your parser should expose a function called `parseDocumentDetails`
 // ******************************************************* //
 // Logic for API handlers starts here                      //
 // ******************************************************* //
-YourParser.parseDocumentDetails = ({ raw_text: rawText }) => {
+const parseDocumentDetails  = ({ raw_text: rawText }) => {
   ....
   ....
   ....
@@ -30,10 +31,13 @@ YourParser.parseDocumentDetails = ({ raw_text: rawText }) => {
 // Logic for API handlers ends here                        //
 // ******************************************************* //
 
-exports.default = YourParser;
+module.exports = { parseDocumentDetails };
 ```
 ### Request
-Your parser function should accept `{ raw_text: Array<string>}` as input.
+Your parser should accept `{ raw_text: Array<string>}` as input.
 
 ### Response
-Your parser function should return `{ is_document_valid: boolean, document_details: object }` as output.
+Your parser should return `{ is_document_valid: boolean, document_details: object }` as output.
+
+# Example
+Please refer to [sample_parser.js](https://github.com/SourabhJaz/smart-docs-parser/blob/master/docs/sample_parser.js)
