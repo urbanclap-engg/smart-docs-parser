@@ -10,9 +10,9 @@ interface DocumentDetails {
 
 export interface ExtractDocumentDetailsFromImageRequest {
   document_url: string;
-  document_type: "PAN_CARD" | "AADHAAR_CARD";
+  document_type: string;
   ocr_library: {
-    ocr_type: "google-vision";
+    ocr_type: string;
     api_key: string;
   };
 }

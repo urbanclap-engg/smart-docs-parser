@@ -23,9 +23,12 @@
   ],
   "author": "Sourabh Jajoria",
   "license": "ISC",
-  "files": ["lib/**/*"],
+  "files": [
+    "lib/**/*"
+  ],
   "dependencies": {
     "bluebird": "^3.7.2",
+    "config": "^3.2.5",
     "lodash": "^4.17.15",
     "moment": "^2.10.5",
     "request": "^2.88.0",
