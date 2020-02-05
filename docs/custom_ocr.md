@@ -2,11 +2,13 @@
 # Usage
 ## Configuration
 ### config/default.json
+Add OCR API key (if any) to the configuration
 ```Javascript
-// Add OCR API key (if any) in configuration
-"api_keys": {
-    "your-library-name": "YourAPIKEY"
-}
+  "smart-docs-parser": {
+    "api_keys": {
+      "your-library-name": "YourAPIKEY"
+    }
+  }
 ```
 ## Code
 ```Javascript
