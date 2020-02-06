@@ -6,3 +6,9 @@ export interface ExtractDocumentTypeRequest {
 export interface ExtractDocumentTypeResponse {
   raw_text: Array<string>;
 }
+
+export interface CustomOCR {
+  extractDocumentText(
+    params: ExtractDocumentTypeRequest
+  ): ExtractDocumentTypeResponse;
+}

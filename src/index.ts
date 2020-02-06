@@ -5,6 +5,8 @@ import {
   ExtractDocumentDetailsFromImageRequest,
   ExtractDocumentDetailsFromImageResponse
 } from "./interfaces/SmartDocuments";
+import { CustomOCR } from "./interfaces/OCR";
+import { CustomParser } from "./interfaces/DocumentParser";
 import Constants from "./constants";
 import Config from "config";
 
@@ -24,12 +26,11 @@ const getAPIKeyFromConfig = (ocrLibrary: string): string => {
 const extractRawText = async (
   documentURL: string,
   ocrLibrary: string,
-  customOCRPath: string
+  customOCR: CustomOCR
 ) => {
   const apiKey = getAPIKeyFromConfig(ocrLibrary);
-  if (!_.isEmpty(customOCRPath)) {
-    const ocrModule = require(`${customOCRPath}`);
-    return await ocrModule.extractDocumentText({
+  if (!_.isEmpty(customOCR)) {
+    return await customOCR.extractDocumentText({
       document_url: documentURL,
       api_key: apiKey
     });
@@ -51,11 +52,10 @@ const validateDocumentText = (rawText: Array<string>): boolean => {
 const parseDocumentDetails = async (
   documentType: string,
   rawText: Array<string>,
-  customParserPath: string
+  customParser: CustomParser
 ) => {
-  if (!_.isEmpty(customParserPath)) {
-    const parserModule = require(`${customParserPath}`);
-    return await parserModule.parseDocumentDetails({
+  if (!_.isEmpty(customParser)) {
+    return await customParser.parseDocumentDetails({
       raw_text: rawText
     });
   }
@@ -78,15 +78,11 @@ SmartDocuments.extractDocumentDetailsFromImage = async (
     document_type: documentType,
     document_url: documentURL,
     ocr_library: ocrLibrary,
-    custom_parser_path: customParserPath,
-    custom_ocr_path: customOCRPath
+    custom_parser: customParser,
+    custom_ocr: customOCR
   } = params;
 
-  const ocrResponse = await extractRawText(
-    documentURL,
-    ocrLibrary,
-    customOCRPath
-  );
+  const ocrResponse = await extractRawText(documentURL, ocrLibrary, customOCR);
   const rawText = _.get(ocrResponse, "raw_text", []);
   const isValidText = validateDocumentText(rawText);
   if (!isValidText) {
@@ -96,7 +92,7 @@ SmartDocuments.extractDocumentDetailsFromImage = async (
   const documentDetails = await parseDocumentDetails(
     documentType,
     rawText,
-    customParserPath
+    customParser
   );
 
   return {
