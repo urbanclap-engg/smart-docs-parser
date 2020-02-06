@@ -20,7 +20,7 @@ const extractedDocumentDetails = await SmartDocuments.extractDocumentDetailsFrom
 
 
 # Parser Implementation
-## /path/to/parser_file.js
+## /path/to/parser_file.ts
 ### Module
 Your parser should expose a function called `parseDocumentDetails`
 ``` 
