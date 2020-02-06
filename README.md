@@ -126,12 +126,12 @@ Contributions are welcome. Please create a pull-request if you want to add more 
 
 ## Extending smart-docs-parser
 ### For specific use-cases
-* [Parsing more documents](https://github.com/SourabhJaz/smart-docs-parser/blob/master/docs/custom_parser.md)
-* [Adding more OCR libraries](https://github.com/SourabhJaz/smart-docs-parser/blob/master/docs/custom_ocr.md)
+* [Parsing more documents](https://github.com/urbanclap-engg/smart-docs-parser/blob/master/docs/custom_parser.md)
+* [Adding more OCR libraries](https://github.com/urbanclap-engg/smart-docs-parser/blob/master/docs/custom_ocr.md)
 
 ### Contributing to the library
-* [Parsing more documents](https://github.com/SourabhJaz/smart-docs-parser/blob/master/docs/document_parser.md)
-* [Adding more OCR libraries](https://github.com/SourabhJaz/smart-docs-parser/blob/master/docs/ocr_library.md)
+* [Parsing more documents](https://github.com/urbanclap-engg/smart-docs-parser/blob/master/docs/document_parser.md)
+* [Adding more OCR libraries](https://github.com/urbanclap-engg/smart-docs-parser/blob/master/docs/ocr_library.md)
 
 ## License
 [MIT](https://github.com/SourabhJaz/smart-docs-parser/blob/master/LICENSE)
