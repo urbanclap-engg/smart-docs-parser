@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com:SourabhJaz/smart-docs-parser.git"
+    "url": "git+ssh://git@github.com:urbanclap-engg/smart-docs-parser.git"
   },
   "keywords": [
     "OCR",
