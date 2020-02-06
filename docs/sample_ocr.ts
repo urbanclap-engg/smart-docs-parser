@@ -10,4 +10,5 @@ const extractDocumentText = ({ document_url: documentURL, api_key: apiKey }) => 
 // Logic for API handlers ends here                        //
 // ******************************************************* //
 
-module.exports = { extractDocumentText };
+export default { extractDocumentText };
+
