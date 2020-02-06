@@ -49,4 +49,4 @@ Your parser should accept `{ raw_text: Array<string>}` as input.
 Your parser should return `{ is_document_valid: boolean, document_details: object }` as output.
 
 # Example
-Please refer to [sample_parser.js](https://github.com/SourabhJaz/smart-docs-parser/blob/master/docs/sample_parser.js)
+Please refer to [sample_parser.ts](https://github.com/urbanclap-engg/smart-docs-parser/blob/master/docs/sample_parser.ts)
