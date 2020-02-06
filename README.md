@@ -38,7 +38,7 @@ import SmartDocuments from 'smart-docs-parser';
 const extractedDocumentDetails = await SmartDocuments.extractDocumentDetailsFromImage({
     document_url: 'https://avatars2.githubusercontent.com/u/20634933?s=40&v=4',
     document_type: 'PAN_CARD',
-    ocr_library: 'google-vision
+    ocr_library: 'google-vision'
 });
 
 // Sample Response
@@ -74,8 +74,8 @@ export interface ExtractDocumentDetailsFromImageRequest {
   document_url: string;
   document_type: string;
   ocr_library: string;
-  custom_parser_path?: string; // Only for custom parsers
-  custom_ocr_path?: string; // Only for custom OCRs
+  custom_parser?: object; // Only for custom parsers
+  custom_ocr?: object; // Only for custom OCRs
 }
 ```
 ### Response
