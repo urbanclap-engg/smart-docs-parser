@@ -13,4 +13,4 @@ const parseDocumentDetails = ({ raw_text: rawText }) => {
 // Logic for API handlers ends here                        //
 // ******************************************************* //
 
-module.exports = { parseDocumentDetails };
+export default { parseDocumentDetails };
