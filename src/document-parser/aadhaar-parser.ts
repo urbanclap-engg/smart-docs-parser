@@ -140,39 +140,35 @@ const processAadhaarName = (
   textLines: Array<string>,
   aadhaarHeadingLineNumbers: Record<string, any>
 ) => {
-  const aadhaarNumberRelativeNameLine =
+  const aadhaarRelativeNamePrevLine =
     _.isNumber(aadhaarHeadingLineNumbers["aadhar_relative_name_text_line"]) &&
     aadhaarHeadingLineNumbers["aadhar_relative_name_text_line"] - 1;
   if (
-    aadhaarNumberRelativeNameLine &&
-    AADHAAR_REGEX["name_format"].exec(textLines[aadhaarNumberRelativeNameLine])
+    aadhaarRelativeNamePrevLine &&
+    AADHAAR_REGEX["name_format"].exec(textLines[aadhaarRelativeNamePrevLine])
   ) {
-    return textLines[aadhaarNumberRelativeNameLine];
+    return textLines[aadhaarRelativeNamePrevLine];
   }
 
-  const aadhaarGovtTextRelativeNameLine =
+  const aadhaarGovtTextNextLine =
     _.isNumber(aadhaarHeadingLineNumbers["aadhar_govt_text_line"]) &&
     aadhaarHeadingLineNumbers["aadhar_govt_text_line"] + 1;
-  const aadhaarNumberDOBRelativeNameLine =
+  const aadhaarDOBTextPrevLine =
     _.isNumber(aadhaarHeadingLineNumbers["aadhar_dob_text_line"]) &&
     aadhaarHeadingLineNumbers["aadhar_dob_text_line"] - 1;
   if (
-    aadhaarGovtTextRelativeNameLine <= aadhaarNumberDOBRelativeNameLine &&
-    AADHAAR_REGEX["name_format"].exec(
-      textLines[aadhaarGovtTextRelativeNameLine]
-    )
+    aadhaarGovtTextNextLine <= aadhaarDOBTextPrevLine &&
+    AADHAAR_REGEX["name_format"].exec(textLines[aadhaarGovtTextNextLine])
   ) {
-    return textLines[aadhaarGovtTextRelativeNameLine];
+    return textLines[aadhaarGovtTextNextLine];
   }
 
   if (
     !aadhaarHeadingLineNumbers["aadhar_address_start_line"] &&
-    aadhaarNumberDOBRelativeNameLine &&
-    AADHAAR_REGEX["name_format"].exec(
-      textLines[aadhaarNumberDOBRelativeNameLine]
-    )
+    aadhaarDOBTextPrevLine &&
+    AADHAAR_REGEX["name_format"].exec(textLines[aadhaarDOBTextPrevLine])
   ) {
-    return textLines[aadhaarNumberDOBRelativeNameLine];
+    return textLines[aadhaarDOBTextPrevLine];
   }
   return undefined;
 };
