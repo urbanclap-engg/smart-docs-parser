@@ -134,4 +134,4 @@ Contributions are welcome. Please create a pull-request if you want to add more 
 * [Adding more OCR libraries](https://github.com/urbanclap-engg/smart-docs-parser/blob/master/docs/ocr_library.md)
 
 ## License
-[MIT](https://github.com/SourabhJaz/smart-docs-parser/blob/master/LICENSE)
+[MIT](https://github.com/urbanclap-engg/smart-docs-parser/blob/master/LICENSE)
