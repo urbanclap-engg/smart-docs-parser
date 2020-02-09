@@ -91,7 +91,7 @@ interface DocumentDetails {
   name?: string;
   fathers_name?: string;
   date_of_birth?: string;
-  gender?: string;
+  gender?: 'M'|'F';
   address?: string;
 }
 ```
