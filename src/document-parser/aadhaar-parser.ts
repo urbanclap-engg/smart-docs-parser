@@ -1,5 +1,5 @@
 import _ from "lodash";
-import moment from "moment";
+import * as moment from "moment";
 import Constants from "../constants";
 import {
   ParseDocumentDetailsRequest,
