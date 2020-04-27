@@ -1,7 +1,7 @@
 const Constants: any = {};
 Constants.BASE_URL = "https://vision.googleapis.com/v1/images:annotate";
 Constants.KEY_CONNECTOR = "?key=";
-Constants.REQUEST_PAYLOAD = {
+Constants.REQUEST_PAYLOAD = (languages) => ({
   requests: [
     {
       image: {
@@ -13,11 +13,11 @@ Constants.REQUEST_PAYLOAD = {
         }
       ],
       imageContext: {
-        languageHints: ["en"]
+        languageHints: languages
       }
     }
   ]
-};
+});
 Constants.EMPTY_RESPONSE = {
   raw_text: []
 };
