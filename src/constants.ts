@@ -37,4 +37,6 @@ Constants.INVALID_DOCUMENT_RESPONSE = {
   document_details: {}
 };
 
+Constants.DEFAULT_LANUGUAGES = ["en"];
+
 export default Constants;

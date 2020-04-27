@@ -1,6 +1,7 @@
 export interface ExtractDocumentTypeRequest {
   document_url: string;
   api_key: string;
+  languages?: string[];
 }
 
 export interface ExtractDocumentTypeResponse {

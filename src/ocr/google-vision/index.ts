@@ -47,7 +47,7 @@ GoogleVision.extractDocumentText = async (
     return Constants.EMPTY_RESPONSE;
   }
 
-  const payload = Constants.REQUEST_PAYLOAD;
+  const payload = Constants.REQUEST_PAYLOAD(params.languages);
   payload["requests"][0]["image"]["content"] = base64String;
   const apiURL = getApiUrl(apiKey);
   const visionResponse = await requestPromise({
