@@ -59,7 +59,7 @@ GoogleVision.extractDocumentText = async (
     const base64FetchEndTime = moment.utc();
     const base64FetchTime = moment
       .utc(base64FetchEndTime)
-      .diff(base64FetchStartTime, "millisecond");
+      .diff(base64FetchStartTime);
     const remainingOcrTime = _.max([0, ocrTimeout - base64FetchTime]);
     if (!remainingOcrTime) {
       return Constants.EMPTY_RESPONSE;
