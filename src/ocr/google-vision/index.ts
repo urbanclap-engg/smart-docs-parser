@@ -15,10 +15,14 @@ const GoogleVision: any = {};
 // ******************************************************* //
 // Logic for internal functions starts here                  //
 // ******************************************************* //
-const getBase64StringFromURL = async (documentUrl: string) => {
+const getBase64StringFromURL = async (
+  documentUrl: string,
+  ocrTimeout: number
+) => {
   const base64Image = await request.getAsync({
     url: documentUrl,
-    encoding: null
+    encoding: null,
+    timeout: ocrTimeout
   });
   return Buffer.from(_.get(base64Image, "body", "")).toString("base64");
 };
@@ -47,11 +51,10 @@ GoogleVision.extractDocumentText = async (
       return Constants.EMPTY_RESPONSE;
     }
 
-    const base64String = await getBase64StringFromURL(documentUrl);
+    const base64String = await getBase64StringFromURL(documentUrl, ocrTimeout);
     if (_.isEmpty(base64String)) {
       return Constants.EMPTY_RESPONSE;
     }
-
     const payload = Constants.REQUEST_PAYLOAD;
     payload["requests"][0]["image"]["content"] = base64String;
     const apiURL = getApiUrl(apiKey);
