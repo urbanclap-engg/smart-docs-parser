@@ -37,39 +37,48 @@ const getApiUrl = apiKey => {
 GoogleVision.extractDocumentText = async (
   params: ExtractDocumentTypeRequest
 ): Promise<ExtractDocumentTypeResponse> => {
-  const { document_url: documentUrl, api_key: apiKey } = params;
-  if (_.isEmpty(apiKey)) {
-    return Constants.EMPTY_RESPONSE;
+  const {
+    document_url: documentUrl,
+    api_key: apiKey,
+    timeout: ocrTimeout = Constants.OCR_TIMEOUT
+  } = params;
+  try {
+    if (_.isEmpty(apiKey)) {
+      return Constants.EMPTY_RESPONSE;
+    }
+
+    const base64String = await getBase64StringFromURL(documentUrl);
+    if (_.isEmpty(base64String)) {
+      return Constants.EMPTY_RESPONSE;
+    }
+
+    const payload = Constants.REQUEST_PAYLOAD;
+    payload["requests"][0]["image"]["content"] = base64String;
+    const apiURL = getApiUrl(apiKey);
+    const visionResponse = await requestPromise({
+      method: "POST",
+      url: apiURL,
+      body: payload,
+      json: true,
+      timeout: ocrTimeout
+    });
+
+    const annotations = _.get(visionResponse, "responses", []);
+    const fullTextAnnotation = _.find(annotations, annotation => {
+      const textAnnotation = _.get(annotation, "fullTextAnnotation", {});
+      return !_.isEmpty(textAnnotation);
+    });
+    if (_.isEmpty(fullTextAnnotation)) {
+      return Constants.EMPTY_RESPONSE;
+    }
+
+    const text = _.get(fullTextAnnotation, "fullTextAnnotation.text", "");
+    return {
+      raw_text: _.split(text, "\n")
+    };
+  } catch (err) {
+    throw new Error(JSON.stringify(err).substr(0, 200));
   }
-
-  const base64String = await getBase64StringFromURL(documentUrl);
-  if (_.isEmpty(base64String)) {
-    return Constants.EMPTY_RESPONSE;
-  }
-
-  const payload = Constants.REQUEST_PAYLOAD;
-  payload["requests"][0]["image"]["content"] = base64String;
-  const apiURL = getApiUrl(apiKey);
-  const visionResponse = await requestPromise({
-    method: "POST",
-    url: apiURL,
-    body: payload,
-    json: true
-  });
-
-  const annotations = _.get(visionResponse, "responses", []);
-  const fullTextAnnotation = _.find(annotations, annotation => {
-    const textAnnotation = _.get(annotation, "fullTextAnnotation", {});
-    return !_.isEmpty(textAnnotation);
-  });
-  if (_.isEmpty(fullTextAnnotation)) {
-    return Constants.EMPTY_RESPONSE;
-  }
-
-  const text = _.get(fullTextAnnotation, "fullTextAnnotation.text", "");
-  return {
-    raw_text: _.split(text, "\n")
-  };
 };
 // ******************************************************* //
 // Logic for API handlers ends here                        //

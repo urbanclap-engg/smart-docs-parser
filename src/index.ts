@@ -26,18 +26,21 @@ const getAPIKeyFromConfig = (ocrLibrary: string): string => {
 const extractRawText = async (
   documentURL: string,
   ocrLibrary: string,
-  customOCR: CustomOCR
+  customOCR: CustomOCR,
+  ocrTimeout: number
 ) => {
   const apiKey = getAPIKeyFromConfig(ocrLibrary);
   if (!_.isEmpty(customOCR)) {
     return await customOCR.extractDocumentText({
       document_url: documentURL,
-      api_key: apiKey
+      api_key: apiKey,
+      timeout: ocrTimeout
     });
   }
   return await OCR[ocrLibrary].extractDocumentText({
     document_url: documentURL,
-    api_key: apiKey
+    api_key: apiKey,
+    timeout: ocrTimeout
   });
 };
 
@@ -79,10 +82,16 @@ SmartDocuments.extractDocumentDetailsFromImage = async (
     document_url: documentURL,
     ocr_library: ocrLibrary,
     custom_parser: customParser,
-    custom_ocr: customOCR
+    custom_ocr: customOCR,
+    timeout: ocrTimeout
   } = params;
 
-  const ocrResponse = await extractRawText(documentURL, ocrLibrary, customOCR);
+  const ocrResponse = await extractRawText(
+    documentURL,
+    ocrLibrary,
+    customOCR,
+    ocrTimeout
+  );
   const rawText = _.get(ocrResponse, "raw_text", []);
   const isValidText = validateDocumentText(rawText);
   if (!isValidText) {

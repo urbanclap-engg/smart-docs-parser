@@ -1,6 +1,7 @@
 export interface ExtractDocumentTypeRequest {
   document_url: string;
   api_key: string;
+  timeout?: number;
 }
 
 export interface ExtractDocumentTypeResponse {

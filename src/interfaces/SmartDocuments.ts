@@ -17,6 +17,7 @@ export interface ExtractDocumentDetailsFromImageRequest {
   ocr_library: string;
   custom_parser?: CustomParser;
   custom_ocr?: CustomOCR;
+  timeout?: number;
 }
 
 export interface ExtractDocumentDetailsFromImageResponse {

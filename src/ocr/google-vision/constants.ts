@@ -21,5 +21,6 @@ Constants.REQUEST_PAYLOAD = {
 Constants.EMPTY_RESPONSE = {
   raw_text: []
 };
+Constants.OCR_TIMEOUT = 30000;
 
 export default Constants;
