@@ -1,5 +1,6 @@
 import requestPromise from "request-promise";
 import _ from "lodash";
+import * as moment from "moment";
 import BluebirdPromise from "bluebird";
 import {
   ExtractDocumentTypeRequest,
@@ -50,11 +51,20 @@ GoogleVision.extractDocumentText = async (
     if (_.isEmpty(apiKey)) {
       return Constants.EMPTY_RESPONSE;
     }
-
+    const base64FetchStartTime = moment.utc();
     const base64String = await getBase64StringFromURL(documentUrl, ocrTimeout);
     if (_.isEmpty(base64String)) {
       return Constants.EMPTY_RESPONSE;
     }
+    const base64FetchEndTime = moment.utc();
+    const base64FetchTime = moment
+      .utc(base64FetchEndTime)
+      .diff(base64FetchStartTime, "millisecond");
+    const remainingOcrTime = _.max([0, ocrTimeout - base64FetchTime]);
+    if (!remainingOcrTime) {
+      return Constants.EMPTY_RESPONSE;
+    }
+
     const payload = Constants.REQUEST_PAYLOAD;
     payload["requests"][0]["image"]["content"] = base64String;
     const apiURL = getApiUrl(apiKey);
@@ -63,7 +73,7 @@ GoogleVision.extractDocumentText = async (
       url: apiURL,
       body: payload,
       json: true,
-      timeout: ocrTimeout
+      timeout: remainingOcrTime
     });
 
     const annotations = _.get(visionResponse, "responses", []);
