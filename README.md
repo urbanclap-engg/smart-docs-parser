@@ -76,6 +76,7 @@ export interface ExtractDocumentDetailsFromImageRequest {
   ocr_library: string;
   custom_parser?: object; // Only for custom parsers
   custom_ocr?: object; // Only for custom OCRs
+  timeout?: number; //Optional request timeout parameter, defaults to 30 secs
 }
 ```
 ### Response
