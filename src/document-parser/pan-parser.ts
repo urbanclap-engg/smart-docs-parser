@@ -24,7 +24,7 @@ const PAN_BASIC_MAP = {
   number: 1
 };
 
-const LINE_MIN_SIZE = 4;
+const LINE_MIN_SIZE = 3;
 
 const PANParser: any = {};
 
