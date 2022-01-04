@@ -9,10 +9,10 @@ import {
 const PAN_REGEX = {
   govt: /GOVT|INDIA/,
   income_tax: /INCOME|TAX/,
-  fathers_name_heading: /Father/,
+  fathers_name_heading: /Father/i,
   dob_heading: /Date|Birth/,
   date_format: /(\d{2}\/\d{2}\/\d{4})/,
-  number_heading: /Permanent|Account|Number/,
+  number_heading: /Permanent|Account|Number/i,
   number_format: /[A-Z0-9]{10,}/,
   words_format: /^[A-Z]+[A-Z\s.]+$/
 };
