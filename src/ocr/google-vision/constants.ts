@@ -11,10 +11,7 @@ Constants.REQUEST_PAYLOAD = {
         {
           type: "TEXT_DETECTION"
         }
-      ],
-      imageContext: {
-        languageHints: ["en"]
-      }
+      ]
     }
   ]
 };
