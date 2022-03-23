@@ -42,7 +42,7 @@ const getApiUrl = apiKey => {
 GoogleVision.extractDocumentText = async (
   params: ExtractDocumentTypeRequest
 ): Promise<ExtractDocumentTypeResponse> => {
-  console.log('GOOGLE VISION HIT');
+  console.log('GOOGLE VISION HIT!');
   const {
     document_url: documentUrl,
     api_key: apiKey,

@@ -18,10 +18,13 @@ const AADHAAR_REGEX = {
   number_format: /[\d\s]{12,}/,
   name_format: /^[a-zA-Z\s\.]+$/,
   address_start: /([Ss]\/[Oo])|([Ww]\/[Oo])|([Dd]\/[Oo])|([Cc]\/[Oo])|(Address|ADDRESS)/,
+  address_head: /Address[:\s]*|ADDRESS[:\s]*/,
   address_start_split: /,/,
-  noise: /(^[\s]+$)|(^[A-Z]{0,2}[.,]+$)|(^[a-z])|(^[A-Z0-9]{2,}[a-z]+)|(^[A-Z0-9]+[a-z]+[A-Z]+)|(^[A-Z0-9]+[.,]+[A-Z0-9]+)|(^[0-9]+[a-zA-Z]{2,})/,
+  noise: /(^[\s]+$)|(^[A-Z]{0,2}[.,]+$)|(^[A-Z0-9]{2,}[a-z]+)|(^[A-Z0-9]+[a-z]+[A-Z]+)|(^[A-Z0-9]+[.,]+[A-Z0-9]+)|(^[0-9]+[a-zA-Z]{3,})|(^www\.\w+)|(\.gov\.in*$)/,
   address_end: /([A-Z\s]+[a-z]*[,-\s]+[0-9]{6}$)|(^[0-9]{6}$)/,
-  fathers_name_split: /([Ss]\/[Oo])[\s:]+|([Dd]\/[Oo])[\s:]+|([Cc]\/[Oo])[\s:]+|([Ww]\/[Oo])[\s:]+/
+  fathers_name_split: /([Ss]\/[Oo])[\s:]+|([Dd]\/[Oo])[\s:]+|([Cc]\/[Oo])[\s:]+|([Ww]\/[Oo])[\s:]+/,
+  english: /(^[\w,.:;&*\/|)('"#+^`-]*$)/,
+  local_language_reverse_prefix: /[^\w\s,.:;&*\/|)('"#+^`-]+.*/
 };
 
 const LINE_MIN_SIZE = 4;
@@ -44,6 +47,9 @@ const filterNoiseFromLine = (lineText: string) => {
     if (AADHAAR_REGEX["noise"].exec(word)) {
       return false;
     }
+    if (!AADHAAR_REGEX["english"].exec(word)) {
+      return false;
+    }
     return true;
   });
   return _.join(filteredSpacedList, " ");
@@ -52,8 +58,22 @@ const filterNoiseFromLine = (lineText: string) => {
 const removeNoiseFromText = (lines: Array<string>) => {
   const filteredLines = [];
   _.forEach(lines, line => {
-    if (_.size(line) >= LINE_MIN_SIZE) {
-      const filteredText = filterNoiseFromLine(line);
+    const reverseLine = line
+      .split("")
+      .reverse()
+      .join("");
+    const reverseLineWithoutLocalLanguage = _.replace(
+      reverseLine,
+      AADHAAR_REGEX["local_language_reverse_prefix"],
+      ""
+    );
+    const lineWithoutLocalLanguage = reverseLineWithoutLocalLanguage
+      .split("")
+      .reverse()
+      .join("")
+      .trim();
+    if (_.size(lineWithoutLocalLanguage) >= LINE_MIN_SIZE) {
+      const filteredText = filterNoiseFromLine(lineWithoutLocalLanguage);
       filteredLines.push(filteredText);
     }
   });
@@ -101,10 +121,14 @@ const parseAadhaarHeadingLineNumbers = (lines: Array<string>) => {
       AADHAAR_REGEX["relative_name_heading"].exec(line)
     ) {
       aadhaarHeadingLineNumbers["aadhar_relative_name_text_line"] = index;
-    } else if (AADHAAR_REGEX["address_start"].exec(line)) {
-      aadhaarHeadingLineNumbers["aadhar_address_start_line"] = index;
+    } else if (
+      !aadhaarHeadingLineNumbers["aadhar_address_start_line"] &&
+      AADHAAR_REGEX["address_start"].exec(line)
+    ) {
+      aadhaarHeadingLineNumbers["aadhar_address_start_line"] = AADHAAR_REGEX["address_head"].exec(line) ? index : index - 1;
     } else if (
       aadhaarHeadingLineNumbers["aadhar_address_start_line"] &&
+      !aadhaarHeadingLineNumbers["aadhar_address_end_line"] &&
       AADHAAR_REGEX["address_end"].exec(line)
     ) {
       aadhaarHeadingLineNumbers["aadhar_address_end_line"] = index;
@@ -211,7 +235,7 @@ const parseAadhaarNumber = (
 const getAddressStartLineTokens = (rawAddressStartText: string) => {
   const addressRelevantTokens = _.split(
     rawAddressStartText,
-    AADHAAR_REGEX["address_start"]
+    AADHAAR_REGEX["address_head"]
   );
   const addressRelevantString = _.join(_.slice(addressRelevantTokens, 1), "");
   const addressSplit = _.split(
@@ -281,6 +305,8 @@ const processAadhaarAddress = (
   textLines: Array<string>,
   aadhaarHeadingLineNumbers: Record<string, any>
 ) => {
+  console.log(textLines);
+  console.log(aadhaarHeadingLineNumbers);
   const addressStartLine =
     aadhaarHeadingLineNumbers["aadhar_address_start_line"];
   const addressEndLine = aadhaarHeadingLineNumbers["aadhar_address_end_line"];
@@ -292,19 +318,15 @@ const processAadhaarAddress = (
   const addressStartSplit = getAddressStartLineTokens(
     textLines[addressStartLine]
   );
-  if (_.size(addressStartSplit) > 1) {
-    const relevantTokens = _.slice(addressStartSplit, 1);
-    _.forEach(relevantTokens, token => {
+  _.forEach(addressStartSplit, token => {
+    if (!_.isEmpty(token)) {
       addressLines.push(token);
-    });
-  }
+    }
+  });
   _.forEach(_.range(addressStartLine + 1, addressEndLine), lineNumber => {
     addressLines.push(textLines[lineNumber]);
   });
-  const addressEndRelevantText = getAddressEndLineText(
-    textLines[addressEndLine]
-  );
-  addressLines.push(addressEndRelevantText);
+  addressLines.push(textLines[addressEndLine]);
   return _.join(addressLines, " ");
 };
 
