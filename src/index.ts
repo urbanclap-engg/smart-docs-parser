@@ -77,6 +77,7 @@ const parseDocumentDetails = async (
 SmartDocuments.extractDocumentDetailsFromImage = async (
   params: ExtractDocumentDetailsFromImageRequest
 ): Promise<ExtractDocumentDetailsFromImageResponse> => {
+  console.log('API HIT');
   const {
     document_type: documentType,
     document_url: documentURL,
