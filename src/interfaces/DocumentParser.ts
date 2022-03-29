@@ -6,6 +6,10 @@ interface DocumentDetails {
   date_of_birth?: string;
   gender?: string;
   address?: string;
+  city?: string;
+  state?: string;
+  locality?: string;
+  pinCode?: string;
 }
 
 export interface ParseDocumentDetailsRequest {

@@ -1,10 +1,12 @@
 import _ from "lodash";
 import * as moment from "moment";
 import Constants from "../constants";
+import { GooglePlaceConstants } from "./constants";
 import {
   ParseDocumentDetailsRequest,
   ParseDocumentDetailsResponse
 } from "../interfaces/DocumentParser";
+import requestPromise from "request-promise";
 
 // TODO update regex rules
 const AADHAAR_REGEX = {
@@ -17,14 +19,15 @@ const AADHAAR_REGEX = {
   document: /Aadhaar|AADHAAR/,
   number_format: /[\d\s]{12,}/,
   name_format: /^[a-zA-Z\s\.]+$/,
-  address_start: /([Ss]\/[Oo])|([Ww]\/[Oo])|([Dd]\/[Oo])|([Cc]\/[Oo])|(Address|ADDRESS)/,
+  address_start: /([Ss]\/[Oo])|([Ww]\/[Oo])|([Dd]\/[Oo])|([Cc]\/[Oo])|(Address[:\s]*)|(ADDRESS[:\s]*)/,
   address_head: /Address[:\s]*|ADDRESS[:\s]*/,
   address_start_split: /,/,
-  noise: /(^[\s]+$)|(^[A-Z]{0,2}[.,]+$)|(^[A-Z0-9]{2,}[a-z]+)|(^[A-Z0-9]+[a-z]+[A-Z]+)|(^[A-Z0-9]+[.,]+[A-Z0-9]+)|(^[0-9]+[a-zA-Z]{3,})|(^www\.\w+)|(\.gov\.in*$)/,
-  address_end: /([A-Z\s]+[a-z]*[,-\s]+[0-9]{6}$)|(^[0-9]{6}$)/,
+  noise: /(^[\s]+$)|(^[A-Z]{0,2}[.,]+$)|(^[A-Z0-9]{2,}[a-z]+)|(^[A-Z0-9]+[.,]+[A-Z0-9]+)|(^[0-9]+[a-zA-Z]{3,})|(^www\.\w+)|(\.gov\.in*$)/,
+  address_end: /([A-Z\s]+[a-z]*[,;:._\s-]+[0-9]{6}\.?$)|(^[0-9]{6}\.?$)/,
   fathers_name_split: /([Ss]\/[Oo])[\s:]+|([Dd]\/[Oo])[\s:]+|([Cc]\/[Oo])[\s:]+|([Ww]\/[Oo])[\s:]+/,
   english: /(^[\w,.:;&*\/|)('"#+^`-]*$)/,
-  local_language_reverse_prefix: /[^\w\s,.:;&*\/|)('"#+^`-]+.*/
+  local_language_reverse_prefix: /[^\w\s,.:;&*\/|)('"#+^`-]+.*/,
+  unwanted_prefix_suffix: /(^[\s.,-])|([\s.,-]$)/g
 };
 
 const LINE_MIN_SIZE = 4;
@@ -102,33 +105,33 @@ const parseAadhaarHeadingLineNumbers = (lines: Array<string>) => {
     } else if (AADHAAR_REGEX["govt"].exec(line)) {
       aadhaarHeadingLineNumbers["aadhar_govt_text_line"] = index;
     } else if (
-      !aadhaarHeadingLineNumbers["aadhar_dob_text_line"] &&
+      aadhaarHeadingLineNumbers["aadhar_dob_text_line"] === undefined &&
       AADHAAR_REGEX["dob_heading"].exec(line)
     ) {
       aadhaarHeadingLineNumbers["aadhar_dob_text_line"] = index;
     } else if (
-      !aadhaarHeadingLineNumbers["aadhar_gender_text_line"] &&
+      aadhaarHeadingLineNumbers["aadhar_gender_text_line"] === undefined &&
       AADHAAR_REGEX["gender"].exec(line)
     ) {
       aadhaarHeadingLineNumbers["aadhar_gender_text_line"] = index;
     } else if (
-      !aadhaarHeadingLineNumbers["aadhar_number_text_line"] &&
+      aadhaarHeadingLineNumbers["aadhar_number_text_line"] === undefined &&
       AADHAAR_REGEX["number_format"].exec(line)
     ) {
       aadhaarHeadingLineNumbers["aadhar_number_text_line"] = index;
     } else if (
-      !aadhaarHeadingLineNumbers["aadhar_relative_name_text_line"] &&
+      aadhaarHeadingLineNumbers["aadhar_relative_name_text_line"] === undefined &&
       AADHAAR_REGEX["relative_name_heading"].exec(line)
     ) {
       aadhaarHeadingLineNumbers["aadhar_relative_name_text_line"] = index;
     } else if (
-      !aadhaarHeadingLineNumbers["aadhar_address_start_line"] &&
+      aadhaarHeadingLineNumbers["aadhar_address_start_line"] === undefined &&
       AADHAAR_REGEX["address_start"].exec(line)
     ) {
-      aadhaarHeadingLineNumbers["aadhar_address_start_line"] = AADHAAR_REGEX["address_head"].exec(line) ? index : index - 1;
+      aadhaarHeadingLineNumbers["aadhar_address_start_line"] = index;
     } else if (
-      aadhaarHeadingLineNumbers["aadhar_address_start_line"] &&
-      !aadhaarHeadingLineNumbers["aadhar_address_end_line"] &&
+      aadhaarHeadingLineNumbers["aadhar_address_start_line"] !== undefined &&
+      aadhaarHeadingLineNumbers["aadhar_address_end_line"] === undefined &&
       AADHAAR_REGEX["address_end"].exec(line)
     ) {
       aadhaarHeadingLineNumbers["aadhar_address_end_line"] = index;
@@ -237,7 +240,7 @@ const getAddressStartLineTokens = (rawAddressStartText: string) => {
     rawAddressStartText,
     AADHAAR_REGEX["address_head"]
   );
-  const addressRelevantString = _.join(_.slice(addressRelevantTokens, 1), "");
+  const addressRelevantString = _.join(addressRelevantTokens, "");
   const addressSplit = _.split(
     addressRelevantString,
     AADHAAR_REGEX["address_start_split"]
@@ -305,8 +308,6 @@ const processAadhaarAddress = (
   textLines: Array<string>,
   aadhaarHeadingLineNumbers: Record<string, any>
 ) => {
-  console.log(textLines);
-  console.log(aadhaarHeadingLineNumbers);
   const addressStartLine =
     aadhaarHeadingLineNumbers["aadhar_address_start_line"];
   const addressEndLine = aadhaarHeadingLineNumbers["aadhar_address_end_line"];
@@ -327,7 +328,8 @@ const processAadhaarAddress = (
     addressLines.push(textLines[lineNumber]);
   });
   addressLines.push(textLines[addressEndLine]);
-  return _.join(addressLines, " ");
+  const address = _.join(addressLines, " ");
+  return _.replace(address, AADHAAR_REGEX["unwanted_prefix_suffix"], "");
 };
 
 const parseAadhaarText = (
@@ -383,13 +385,63 @@ const validateAadhaarText = (
   const {
     aadhar_number_text_line: aadharNumberTextLine,
     aadhar_title_text_line: aadharTitleTextLine,
-    aadhar_document_text_line: aadharDocumentTextLine
+    aadhar_document_text_line: aadharDocumentTextLine,
+    aadhar_address_start_line: aadharAddressStartLine,
+    aadhar_address_end_line: aadharAddressEndLine
   } = aadhaarHeadingLineNumbers;
   return (
     _.isNumber(aadharNumberTextLine) ||
     _.isNumber(aadharTitleTextLine) ||
-    _.isNumber(aadharDocumentTextLine)
+    _.isNumber(aadharDocumentTextLine) ||
+    _.isNumber(aadharAddressStartLine) ||
+    _.isNumber(aadharAddressEndLine)
   );
+};
+
+const getGooglePlacesDetails = async pinCode => {
+  const googlePlacesResponse = await requestPromise({
+    method: "GET",
+    url:
+      GooglePlaceConstants.BASE_URL +
+      pinCode +
+      GooglePlaceConstants.REGION +
+      GooglePlaceConstants.KEY_CONNECTOR +
+      GooglePlaceConstants.API_KEY
+  });
+  const addressComponents = _.get(
+    JSON.parse(googlePlacesResponse),
+    "results[0].address_components",
+    []
+  );
+  const localityComponent = _.find(addressComponents, component => {
+    const types = _.get(component, "types", []);
+    return _.includes(types, "locality");
+  });
+  const cityComponent = _.find(addressComponents, component => {
+    const types = _.get(component, "types", []);
+    return _.includes(types, "administrative_area_level_2");
+  });
+  const stateComponent = _.find(addressComponents, component => {
+    const types = _.get(component, "types", []);
+    return _.includes(types, "administrative_area_level_1");
+  });
+  return {
+    locality: _.get(localityComponent, "long_name"),
+    city: _.get(cityComponent, "long_name"),
+    state: _.get(stateComponent, "long_name")
+  };
+};
+
+const populateAadhaarAddressDetails = async address => {
+  const pinCode = _.slice(address, -6).join("");
+  const { locality, city, state } = await getGooglePlacesDetails(pinCode);
+  return {
+    address,
+    locality,
+    city,
+    state,
+    pinCode
+  };
 };
 
 // ******************************************************* //
@@ -399,9 +451,9 @@ const validateAadhaarText = (
 // ******************************************************* //
 // Logic for API handlers starts here                      //
 // ******************************************************* //
-AadhaarParser.parseDocumentDetails = (
+AadhaarParser.parseDocumentDetails = async (
   params: ParseDocumentDetailsRequest
-): ParseDocumentDetailsResponse => {
+): Promise<ParseDocumentDetailsResponse> => {
   const { raw_text: rawTextLines } = params;
   const textLines = filterRelevantAadhaarText(rawTextLines);
   const aadhaarHeadingLineNumbers = parseAadhaarHeadingLineNumbers(textLines);
@@ -411,9 +463,14 @@ AadhaarParser.parseDocumentDetails = (
   }
 
   const parsedDetails = parseAadhaarText(textLines, aadhaarHeadingLineNumbers);
+  const address = parsedDetails.address;
+  const addressDetails = !_.isEmpty(address)
+    ? await populateAadhaarAddressDetails(address)
+    : {};
+  const populateParsedDetails = { ...parsedDetails, ...addressDetails };
   return {
     is_document_valid: true,
-    document_details: parsedDetails
+    document_details: populateParsedDetails
   };
 };
 // ******************************************************* //
