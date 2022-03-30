@@ -1,1 +1,0 @@
-{"version":3,"file":"custom_ocr.mock.js","sourceRoot":"","sources":["../../src/_tests_/custom_ocr.mock.ts"],"names":[],"mappings":";;AAAA,gBAAgB;AAChB,6DAA6D;AAC7D,6DAA6D;AAC7D,6DAA6D;AAC7D,IAAM,mBAAmB,GAAG,UAAC,EAA6B;QAAb,WAAW,kBAAA;IACtD,OAAO;QACL,QAAQ,EAAE,CAAC,WAAW,CAAC;KACxB,CAAC;AACJ,CAAC,CAAC;AACF,6DAA6D;AAC7D,6DAA6D;AAC7D,6DAA6D;AAC7D,kBAAe,EAAE,mBAAmB,qBAAA,EAAE,CAAC"}
