@@ -27,7 +27,7 @@ const AADHAAR_REGEX = {
   fathers_name_split: /([Ss]\/[Oo])[\s:]+|([Dd]\/[Oo])[\s:]+|([Cc]\/[Oo])[\s:]+|([Ww]\/[Oo])[\s:]+/,
   english: /(^[\w,.:;&*\/|)('"#+^`-]*$)/,
   local_language_reverse_prefix: /[^\w\s,.:;&*\/|)('"#+^`-]+.*/,
-  unwanted_prefix_suffix: /(^[\s.,-])|([\s.,-]$)/g
+  unwanted_prefix_suffix: /(^[\s.,-]+)|([\s.,-]+$)/g
 };
 
 const LINE_MIN_SIZE = 4;
