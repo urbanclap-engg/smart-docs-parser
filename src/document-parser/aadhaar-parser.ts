@@ -17,11 +17,15 @@ const AADHAAR_REGEX = {
   document: /Aadhaar|AADHAAR/,
   number_format: /[\d\s]{12,}/,
   name_format: /^[a-zA-Z\s\.]+$/,
-  address_start: /([Ss]\/[Oo])|([Ww]\/[Oo])|([Dd]\/[Oo])|([Cc]\/[Oo])|(Address|ADDRESS)/,
+  address_start: /([Ss]\/[Oo])|([Ww]\/[Oo])|([Dd]\/[Oo])|([Cc]\/[Oo])|(Address[:\s]*)|(ADDRESS[:\s]*)/,
+  address_head: /Address[:\s]*|ADDRESS[:\s]*/,
   address_start_split: /,/,
-  noise: /(^[\s]+$)|(^[A-Z]{0,2}[.,]+$)|(^[a-z])|(^[A-Z0-9]{2,}[a-z]+)|(^[A-Z0-9]+[a-z]+[A-Z]+)|(^[A-Z0-9]+[.,]+[A-Z0-9]+)|(^[0-9]+[a-zA-Z]{2,})/,
-  address_end: /([A-Z\s]+[a-z]*[,-\s]+[0-9]{6}$)|(^[0-9]{6}$)/,
-  fathers_name_split: /([Ss]\/[Oo])[\s:]+|([Dd]\/[Oo])[\s:]+|([Cc]\/[Oo])[\s:]+|([Ww]\/[Oo])[\s:]+/
+  noise: /(^[\s]+$)|(^[A-Z]{0,2}[.,]+$)|(^[A-Z0-9]{2,}[a-z]+)|(^[A-Z0-9]+[.,]+[A-Z0-9]+)|(^[0-9]+[a-zA-Z]{3,})|(^www\.\w+)|(\.gov\.in*$)/,
+  address_end: /([A-Z\s]+[a-z]*[,;:._\s-]+[0-9]{6}\.?$)|(^[0-9]{6}\.?$)/,
+  fathers_name_split: /([Ss]\/[Oo])[\s:]+|([Dd]\/[Oo])[\s:]+|([Cc]\/[Oo])[\s:]+|([Ww]\/[Oo])[\s:]+/,
+  english: /(^[\w,.:;&*\/|)('"#+^`-]*$)/,
+  local_language_reverse_prefix: /[^\w\s,.:;&*\/|)('"#+^`-]+.*/,
+  unwanted_prefix_suffix: /(^[\s.,-]+)|([\s.,-]+$)/g
 };
 
 const LINE_MIN_SIZE = 4;
@@ -44,6 +48,9 @@ const filterNoiseFromLine = (lineText: string) => {
     if (AADHAAR_REGEX["noise"].exec(word)) {
       return false;
     }
+    if (!AADHAAR_REGEX["english"].exec(word)) {
+      return false;
+    }
     return true;
   });
   return _.join(filteredSpacedList, " ");
@@ -52,8 +59,22 @@ const filterNoiseFromLine = (lineText: string) => {
 const removeNoiseFromText = (lines: Array<string>) => {
   const filteredLines = [];
   _.forEach(lines, line => {
-    if (_.size(line) >= LINE_MIN_SIZE) {
-      const filteredText = filterNoiseFromLine(line);
+    const reverseLine = line
+      .split("")
+      .reverse()
+      .join("");
+    const reverseLineWithoutLocalLanguage = _.replace(
+      reverseLine,
+      AADHAAR_REGEX["local_language_reverse_prefix"],
+      ""
+    );
+    const lineWithoutLocalLanguage = reverseLineWithoutLocalLanguage
+      .split("")
+      .reverse()
+      .join("")
+      .trim();
+    if (_.size(lineWithoutLocalLanguage) >= LINE_MIN_SIZE) {
+      const filteredText = filterNoiseFromLine(lineWithoutLocalLanguage);
       filteredLines.push(filteredText);
     }
   });
@@ -82,29 +103,33 @@ const parseAadhaarHeadingLineNumbers = (lines: Array<string>) => {
     } else if (AADHAAR_REGEX["govt"].exec(line)) {
       aadhaarHeadingLineNumbers["aadhar_govt_text_line"] = index;
     } else if (
-      !aadhaarHeadingLineNumbers["aadhar_dob_text_line"] &&
+      aadhaarHeadingLineNumbers["aadhar_dob_text_line"] === undefined &&
       AADHAAR_REGEX["dob_heading"].exec(line)
     ) {
       aadhaarHeadingLineNumbers["aadhar_dob_text_line"] = index;
     } else if (
-      !aadhaarHeadingLineNumbers["aadhar_gender_text_line"] &&
+      aadhaarHeadingLineNumbers["aadhar_gender_text_line"] === undefined &&
       AADHAAR_REGEX["gender"].exec(line)
     ) {
       aadhaarHeadingLineNumbers["aadhar_gender_text_line"] = index;
     } else if (
-      !aadhaarHeadingLineNumbers["aadhar_number_text_line"] &&
+      aadhaarHeadingLineNumbers["aadhar_number_text_line"] === undefined &&
       AADHAAR_REGEX["number_format"].exec(line)
     ) {
       aadhaarHeadingLineNumbers["aadhar_number_text_line"] = index;
     } else if (
-      !aadhaarHeadingLineNumbers["aadhar_relative_name_text_line"] &&
+      aadhaarHeadingLineNumbers["aadhar_relative_name_text_line"] === undefined &&
       AADHAAR_REGEX["relative_name_heading"].exec(line)
     ) {
       aadhaarHeadingLineNumbers["aadhar_relative_name_text_line"] = index;
-    } else if (AADHAAR_REGEX["address_start"].exec(line)) {
+    } else if (
+      aadhaarHeadingLineNumbers["aadhar_address_start_line"] === undefined &&
+      AADHAAR_REGEX["address_start"].exec(line)
+    ) {
       aadhaarHeadingLineNumbers["aadhar_address_start_line"] = index;
     } else if (
-      aadhaarHeadingLineNumbers["aadhar_address_start_line"] &&
+      aadhaarHeadingLineNumbers["aadhar_address_start_line"] !== undefined &&
+      aadhaarHeadingLineNumbers["aadhar_address_end_line"] === undefined &&
       AADHAAR_REGEX["address_end"].exec(line)
     ) {
       aadhaarHeadingLineNumbers["aadhar_address_end_line"] = index;
@@ -211,9 +236,9 @@ const parseAadhaarNumber = (
 const getAddressStartLineTokens = (rawAddressStartText: string) => {
   const addressRelevantTokens = _.split(
     rawAddressStartText,
-    AADHAAR_REGEX["address_start"]
+    AADHAAR_REGEX["address_head"]
   );
-  const addressRelevantString = _.join(_.slice(addressRelevantTokens, 1), "");
+  const addressRelevantString = _.join(addressRelevantTokens, "");
   const addressSplit = _.split(
     addressRelevantString,
     AADHAAR_REGEX["address_start_split"]
@@ -292,20 +317,17 @@ const processAadhaarAddress = (
   const addressStartSplit = getAddressStartLineTokens(
     textLines[addressStartLine]
   );
-  if (_.size(addressStartSplit) > 1) {
-    const relevantTokens = _.slice(addressStartSplit, 1);
-    _.forEach(relevantTokens, token => {
+  _.forEach(addressStartSplit, token => {
+    if (!_.isEmpty(token)) {
       addressLines.push(token);
-    });
-  }
+    }
+  });
   _.forEach(_.range(addressStartLine + 1, addressEndLine), lineNumber => {
     addressLines.push(textLines[lineNumber]);
   });
-  const addressEndRelevantText = getAddressEndLineText(
-    textLines[addressEndLine]
-  );
-  addressLines.push(addressEndRelevantText);
-  return _.join(addressLines, " ");
+  addressLines.push(textLines[addressEndLine]);
+  const address = _.join(addressLines, " ");
+  return _.replace(address, AADHAAR_REGEX["unwanted_prefix_suffix"], "");
 };
 
 const parseAadhaarText = (
@@ -361,12 +383,16 @@ const validateAadhaarText = (
   const {
     aadhar_number_text_line: aadharNumberTextLine,
     aadhar_title_text_line: aadharTitleTextLine,
-    aadhar_document_text_line: aadharDocumentTextLine
+    aadhar_document_text_line: aadharDocumentTextLine,
+    aadhar_address_start_line: aadharAddressStartLine,
+    aadhar_address_end_line: aadharAddressEndLine
   } = aadhaarHeadingLineNumbers;
   return (
     _.isNumber(aadharNumberTextLine) ||
     _.isNumber(aadharTitleTextLine) ||
-    _.isNumber(aadharDocumentTextLine)
+    _.isNumber(aadharDocumentTextLine) ||
+    _.isNumber(aadharAddressStartLine) ||
+    _.isNumber(aadharAddressEndLine)
   );
 };
 

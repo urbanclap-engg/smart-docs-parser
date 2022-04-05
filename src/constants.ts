@@ -9,7 +9,7 @@ Constants.DOCUMENT_TYPES = {
   AADHAAR_CARD: "AADHAAR_CARD"
 };
 
-Constants.MAX_LINES = 30;
+Constants.MAX_LINES = 100;
 
 Constants.PAN_FORMATS = {
   BASIC: "basic",

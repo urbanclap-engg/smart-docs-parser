@@ -9,12 +9,10 @@ Constants.REQUEST_PAYLOAD = {
       },
       features: [
         {
-          type: "TEXT_DETECTION"
+          model: "builtin/latest",
+          type: "DOCUMENT_TEXT_DETECTION"
         }
-      ],
-      imageContext: {
-        languageHints: ["en"]
-      }
+      ]
     }
   ]
 };
