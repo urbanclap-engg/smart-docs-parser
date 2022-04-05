@@ -1,0 +1,48 @@
+{
+  "name": "smart-docs-parser",
+  "version": "1.0.12",
+  "description": "Document Details Parsing using OCR",
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "scripts": {
+    "test": "jest --config jestconfig.json",
+    "build": "tsc",
+    "lint": "tslint -p tsconfig.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com:urbanclap-engg/smart-docs-parser.git"
+  },
+  "keywords": [
+    "OCR",
+    "PAN",
+    "AADHAAR",
+    "PARSING",
+    "AUTO-FILL",
+    "Identity Documents"
+  ],
+  "author": "Sourabh Jajoria",
+  "license": "ISC",
+  "files": [
+    "lib/**/*"
+  ],
+  "dependencies": {
+    "bluebird": "^3.7.2",
+    "config": "^3.2.5",
+    "lodash": "^4.17.15",
+    "moment": "^2.10.5",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^25.1.1",
+    "@types/node": "^13.7.0",
+    "jest": "^25.1.0",
+    "prettier": "^1.19.1",
+    "ts-jest": "^25.2.0",
+    "tslint": "^6.0.0",
+    "tslint-config-prettier": "^1.18.0",
+    "tslint-plugin-prettier": "^2.1.0",
+    "typescript": "^3.6.4"
+  }
+}
